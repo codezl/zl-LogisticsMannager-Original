@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<link rel="stylesheet" href="css/font.css">
+		<link rel="stylesheet" href="css/index.css">
+		<script src="js/vue.js"></script>
+		<script src="js/index.js"></script>
+		<link rel="stylesheet" href="css/main.css" type="text/css" />
+		<script src="/api/checkuser.php"></script>
+		<script src="js/ajax.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			
+			<el-container id="main">
+			    <el-header height="100px">
+			    	<h1 style="font-size: small;">欢迎您 user</h1>
+			    	<p style="font-size: small;">评价订单</p>
+			    </el-header>
+			    
+			    <!--中间主体栏目-->
+			    <el-main>
+			    	<el-card class="box-card">
+					  <div slot="header" class="clearfix">
+					    <span>评价订单，积极参与，为您带来更好的服务</span>
+					  </div>
+					  <div class="text item" id="admin_add" style="margin-left: 40%;">
+					  	
+					  	<p><span>*</span> 评语： <el-input v-model="comment_tx" placeholder="输入评语" type="textarea" rows="5" style=""></el-input></p>
+					  	
+					  	<p style="margin-left: 20%;">
+					  		<span>*</span> 选择评价星级： 
+					  		<el-select v-model="com_lev" placeholder="请选择星级" size="small">
+							    <el-option
+							      v-for="item in options"
+							      :key="item.value"
+							      :label="item.label"
+							      :value="item.value">
+							    </el-option>
+							</el-select>
+					  	</p>
+					  	
+					  	<p style="margin-left: 40%;"><el-button type="primary" @click="save_edit">提交评价</el-button></p>
+					  	<p style="margin: auto;text-align: center;"><el-button type="primary" @click="rcome_edit">追评，待续..</el-button></p>
+					  </div>
+					</el-card>
+			    </el-main>
+			    
+			    <el-footer>
+			    	&copy; code_zl_shop商铺后台系统
+			    </el-footer>
+			  </el-container>
+			
+		</div>
+		<script>
+			new Vue({
+				el:'#app',
+				data:{
+					options: [{
+			          value: '0',
+			          label: '非常好'
+			        }, {
+			          value: '1',
+			          label: '一般'
+			        }, {
+			          value: '2',
+			          label: '差评'
+			        }],
+			        comment_tx:'',
+			        com_lev:'',
+				},
+				
+				//如需给评论标记其他值时可以
+				mounted:function(){
+//					var _that=this;
+//					//获取ID值
+//					var id=location.href.split('=')[1];
+//					//console.log("当前页面的网址是：",id);
+//					
+//					//发送AJAX请求到服务器获取当前ID的所有数据
+//					ajax({
+//						url:'/api/2020admin_one.php?id='+id,
+//						success:function(data){
+//							//console.log(data); 
+//							_that.username=data.username;
+//							_that.pwd=data.password;
+//							_that.status=data.status;
+//						}
+//					});
+				},
+				//事件处理函数对象
+				methods:{
+					
+					save_edit:function(){
+						//获取修改以后的新数据
+						var comment_tx=this.comment_tx;
+						var com_lev=this.com_lev;
+						var id=location.href.split('=')[1];
+						console.log("当前页面的网址是：",id);
+						//构造AJAX发送数据到服务器更新数据
+						ajax({
+							type:'post',
+							url:'/api/2020order_comment_1.php',
+							data:`id=${id}&comment_tx=${comment_tx}&com_lev=${com_lev}`,
+							success:function(data){
+								if(data==1){
+									alert('评价成功');
+									location.href="2020order_list_1.html";
+								}else{
+									alert('您已经评论过了');
+								}
+							}
+						});
+					}
+				}
+				
+			});
+		</script>
+		
+	</body>
+</html>

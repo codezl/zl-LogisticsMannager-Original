@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<link rel="stylesheet" href="css/font.css">
+		<link rel="stylesheet" href="css/index.css">
+		<script src="js/vue.js"></script>
+		<script src="js/index.js"></script>
+		<link rel="stylesheet" href="css/main.css" type="text/css" />
+		<script src="/api/checkuser.php"></script>
+		<script src="js/ajax.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			
+			<el-container id="main">
+			    <el-header height="100px">
+			    	<h1 style="font-size: small;">欢迎您 user</h1>
+			    	<p style="font-size: small;">管理用户账号</p>
+			    </el-header>
+			    
+			    <!--中间主体栏目-->
+			    <el-main>
+			    	<el-card class="box-card">
+					  <div slot="header" class="clearfix">
+					    <span>修改用户信息</span>
+					  </div>
+					  <div class="text item" id="admin_add" style="margin-left: 40%;">
+					  	<p><span>*</span> 用户名： <el-input v-model="username" placeholder="请输入用户名" size="small"></el-input></p>
+					  	<p><span>*</span> 折扣： <el-input v-model="luckey_count" size="small"></el-input></p>
+					  	<p><span>*</span> 密码： <el-input v-model="pwd" type="password" size="small"></el-input></p>
+					  	<p>
+					  		<span>*</span> 选择用户组： 
+					  		<el-select v-model="usergroup" placeholder="请选择用户组" size="small">
+							    <el-option
+							      v-for="item in options"
+							      :key="item.value"
+							      :label="item.label"
+							      :value="item.value">
+							    </el-option>
+							</el-select>
+					  	</p>
+					  	<p><el-button type="primary" @click="save_edit">立即修改</el-button></p>
+					  </div>
+					</el-card>
+			    </el-main>
+			    
+			    <el-footer>
+			    	&copy; code_zl_shop商铺后台系统
+			    </el-footer>
+			  </el-container>
+			
+		</div>
+		<script>
+			new Vue({
+				el:'#app',
+				data:{
+					options: [{
+			          value: '0',
+			          label: '普通会员'
+			        }, {
+			          value: '1',
+			          label: '配送员'
+			        }],
+			        usergroup:'',
+			        username:'',
+			        nickname:'',
+			        luckey_count:'',
+			        pwd:'',
+				},
+				mounted:function(){
+					var _that=this;
+					//获取ID值
+					var id=location.href.split('=')[1];
+					//console.log("当前页面的网址是：",id);
+					
+					//发送AJAX请求到服务器获取当前ID的所有数据
+					ajax({
+						url:'/api/2020user_one.php?id='+id,
+						success:function(data){
+							//console.log(data); 
+							_that.username=data.username;
+							_that.luckey_count=data.discount;
+							_that.pwd=data.password;
+							_that.usergroup=data.usergroup;
+						}
+					});
+				},
+				//事件处理函数对象
+				methods:{
+					save_edit:function(){
+						//获取修改以后的新数据
+						var username=this.username;
+						var luckey_count=this.luckey_count;
+						var pwd=this.pwd;
+						var usergroup=this.usergroup;
+						var id=location.href.split('=')[1];
+						console.log("当前页面的网址是：",id);
+						//构造AJAX发送数据到服务器更新数据
+						ajax({
+							type:'post',
+							url:'/api/2020user_save_edit.php',
+							data:`id=${id}&username=${username}&luckey_count=${luckey_count}&pwd=${pwd}&usergroup=${usergroup}`,
+							success:function(data){
+								if(data==1){
+									alert('修改成功');
+									location.href="2020admin_list.html";
+								}else{
+									alert('修改失败');
+								}
+							}
+						});
+					}
+				}
+				
+			});
+		</script>
+		
+	</body>
+</html>

@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>code_zl_shop商铺后台系统</title>
+
+<link rel="stylesheet" href="css/iconfont.css">
+<link rel="stylesheet" href="css/retail-store-msg.css">
+
+</head>
+
+<!--
+	作者：offline
+	时间：2019-12-11
+	描述：把上面一部分粘贴修改即可
+-->
+<style type="text/css">
+.selectlev{
+ 	display: inline-block;
+  }
+	.type{
+		margin-left: 20px;
+	display: inline-block;	
+	outline: none;
+ 	height: 21px;
+    box-sizing: border-box;
+    }
+</style>
+<body>
+
+<div class="header">
+	<div class="icon-box">
+		<i class="iconfont icon">&#xe637;</i>
+	</div>
+	
+		<div id="userbox" class="userbox" style="margin-left: 50px;">
+			<i class="iconfont">&#xe752;</i>
+		  <h3 id="username" style="display: inline-block;font-size: 16px;"><a href="http://www.baidu.com">1163</a></h3>
+		</div>
+		  
+				
+	
+	
+</div>
+<div class="chatbar">
+	<div class="chatbar-box">
+		<div class="chatbar-contacts">
+			<div class="contacts-search-box">
+				<i class="iconfont">&#xe651;</i>
+				<input type="text" class="search-text" placeholder="请输入要搜索的联系人">
+			</div>
+			<ul class="chatbar-contacts-uls">
+				<li class="pubmsg">
+					<i class="iconfont">&#xe752;</i>
+					<p>公共消息</p>
+				</li> 
+				<li class="levmsg">
+					<i class="iconfont">&#xe752;</i>
+					<p>会员等级信息</p>
+				</li>
+			</ul>
+			
+			<ul class="chatbar-contacts-uls contacts-uls" style="margin-top:120px;">
+				
+			</ul>
+		
+		</div>
+		
+		<div class="chatbar-messages">
+			<div id="selectlev" class="selectlev" οnfοcus="selectFocus(this)">
+				<select id="levelID">
+					<option value="0">-选择等级-</option>
+			        <option value="1">1</option>
+			        <option value="2">2</option>
+			        <option value="3">3</option>
+				</select>
+            </div>
+            <div id="type" class="type">
+            	<input type="text" placeholder="消息类型（如活动，系统，好友）" id="msgtype"/>
+            </div>
+			<div class="messages-title">
+				<i class="iconfont">&#xe752;</i>
+				<h4></h4>
+				<i class="iconfont return-icon">&#xe61a;</i>
+				<i class="iconfont">&#xe752;</i>
+				<h4></h4>
+				<i class="iconfont return-icon">&#xe61a;</i>
+			</div>
+			<div class="messages-text" id="messages-text">
+				<!-- <ul class="messages-text-uls">
+					<li class="messages-text-lis">
+						<h4><i></i><span>黄小小</span><span class="time">2017/2/23 13:56</span></h4>
+						<p>您好！请问您是谁？我和你认识吗？你是哪里人?</p>
+					</li>
+				</ul> -->
+			</div>
+			<div class="messages-box">
+				<textarea class="messages-content" name="" id="text" cols="30" rows="10"></textarea>
+				<input class="message-btn" id="pbubtn" type="button" value="公共信息" onclick="sendPublicMsg()">
+				<input class="message-btn" id="levbtn" type="button" value="特殊会员信息" onclick="sendLevelMsg()">
+				<input class="message-btn" id="one-msgbtn" type="button" value="发送">
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/demo.js"></script>
+<div class="foot-div">
+<p><a href="" target="_blank">code_zl_shop商铺后台系统</a></p>
+</div>
+<script>
+window.selectFocus = function(that) {  
+$(that).attr("size", 5);  
+};  
+window.selectClick = function(that) {  
+$(that).parent().removeAttr("size");  
+$(that).parent().blur();  
+$(that).parent().children("[selected='selected']").removeAttr("selected");  
+$(that).attr("selected", "");  
+};  
+
+   
+    //var str = $("#levelID").find("option:selected").val()
+	$('#getlev').on('click',function(){
+		var str = document.getElementById("levelID").options[document.getElementById("levelID").selectedIndex].value;
+		console.log(str);
+	});
+	
+	//公共信息按钮pubbtn
+	$("#pbubtn").on('click',function(){
+		var str1 = document.getElementById("pbubtn").value;
+		console.log(str1);
+	});
+	
+	//等级信息
+	$("#levbtn").on('click',function(){
+		var str1 = document.getElementById("levbtn").value;
+		console.log(str1);
+	});
+	
+</script>
+</body>
+</html>
+

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<link rel="stylesheet" href="css/font.css">
+		<link rel="stylesheet" href="css/index.css">
+		<script src="js/vue.js"></script>
+		<script src="js/index.js"></script>
+		<link rel="stylesheet" href="css/main.css" type="text/css" />
+		<script src="/api/checkuser.php"></script>
+		<script src="js/ajax.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			
+			<el-container id="main">
+			    <el-header height="100px">
+			    	<h1 style="font-size: small;">欢迎您 admin</h1>
+			    	<p style="font-size: small;">修改帐号密码</p>
+			    </el-header>
+			    
+			    <!--中间主体栏目-->
+			    <el-main>
+			    	<el-card class="box-card">
+					  <div slot="header" class="clearfix">
+					    <span>修改帐号密码</span>
+					  </div>
+					  <div class="text item" id="admin_add" >
+					  	<p><span>*</span> 新昵称： <el-input v-model="username" size="small"></el-input></p>
+					  	<p><span>*</span> 原密码： <el-input v-model="oldpass" type="password"  size="small"></el-input></p>
+					  	<p><span>*</span> 新密码： <el-input v-model="newpass" type="password" placeholder="请输入新密码" size="small"></el-input></p>
+					  	<p><span>*</span> 确认新密码： <el-input v-model="newpass2" type="password" placeholder="请确新密码" size="small"></el-input></p>
+					  	<p><el-button type="primary" @click="changepwd">修改密码</el-button></p>
+					  </div>
+					</el-card>
+			    </el-main>
+			    
+			    <el-footer>
+			    	&copy; code_zl_shop商铺后台系统
+			    </el-footer>
+			  </el-container>
+			
+		</div>
+		<script>
+			new Vue({
+				el:'#app',
+				data:{
+					username:'nihao',
+					oldpass:'',
+					newpass:'',
+					newpass2:'',
+				},
+				//生命周期函数
+				mounted:function(){
+					
+					//取需要修改的用户的昵称
+					var _that=this;
+					
+					ajax({
+						url:'/api/2020admin_changeinfo.php',
+						success:function(data){
+							//console.log(data); 
+							_that.username=data.username;
+						}
+					});
+				},
+				//事件处理函数对象
+				methods:{
+					changepwd:function(){
+						//获取用户输入的密码
+						var username=this.username;
+						var oldpass=this.oldpass;
+						var newpass=this.newpass;
+						
+						//构造AJAX请求，将密码发送服务器实现修改
+						ajax({
+							url:'/api/2020admin_changepwd.php',
+							type:'post',
+							data:'oldpass='+oldpass+'&newpass='+newpass+'&username='+username,
+							success:function(data){
+								//跳转显示修改
+								if(data.errcode=='0'){
+									alert(data.msg);
+									location.href="admin_list.html";
+								}else{
+									alert(data.msg);
+								}
+							}
+						});
+					}
+				}
+			});
+		</script>
+		
+	</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+		<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<link rel="stylesheet" href="css/font.css">
+		<link rel="stylesheet" href="css/index.css">
+		<script src="js/vue.js"></script>
+		<script src="js/index.js"></script>
+		<link rel="stylesheet" href="css/main.css" type="text/css" />
+		<script src="/api/checkuser.php"></script>
+		<script src="js/ajax.js"></script>
+
+		<style>
+			.el-carousel__item h3 {
+				color: #475669;
+				font-size: 14px;
+				opacity: 0.75;
+				line-height: 150px;
+				margin: 0;
+			}
+			
+			.el-carousel__item:nth-child(2n) {
+				background-color: #99a9bf;
+				background-image: url(/img/back1.jpg);
+			}
+			
+			.el-carousel__item:nth-child(2n+1) {
+				background-color: #d3dce6;
+				background-image: url(/img/back2.jpeg);
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="app">
+
+			<el-container id="main">
+				<div class="block">
+					<span class="demonstration" style="margin-left: 5%;">欢迎添加收货地址</span>
+					<el-carousel height="50px" style="width: 80%;margin: auto;">
+						<el-carousel-item v-for="item in 4" :key="item">
+							<h3>{{ item }}</h3>
+						</el-carousel-item>
+					</el-carousel>
+				</div>
+				<!--中间主体栏目-->
+				<el-main>
+					<el-card class="box-card">
+						<div slot="header" class="clearfix">
+							<span>修改栏</span>
+						</div>
+						<div class="text item" id="admin_add">
+							<p><span>*</span> 收件人：
+								<el-input v-model="username" placeholder="请输入收件人" size="small"></el-input>
+							</p>
+							<p><span>*</span> 电话：
+								<el-input v-model="re_phone" placeholder="电话" size="small"></el-input>
+							</p>
+							<p><span>*</span> 邮编：
+								<el-input v-model="post_code" placeholder="邮编" size="small"></el-input>
+							</p>
+							<p style="width: 60px;display: inline-block;"><span>*</span> 省：
+								<el-input v-model="re_provice" placeholder="省" size="small"></el-input>
+							</p>
+							<p style="width: 60px;display: inline-block;"><span>*</span> 市：
+								<el-input v-model="re_city" placeholder="市" size="small"></el-input>
+							</p>
+							<p style="width: 60px;display: inline-block;"><span>*</span> 区：
+								<el-input v-model="re_gion" placeholder="区" size="small"></el-input>
+							</p>
+							<p><span>*</span> 详细地址：
+								<el-input rows="5" v-model="re_detail_addr" placeholder="详细地址" size="small"></el-input>
+							</p>
+							<!--<p>
+					  		<span>*</span> 选择用户组： 
+					  		<el-select v-model="usergroup" placeholder="请选择用户组" size="small">
+							    <el-option
+							      v-for="item in options"
+							      :key="item.value"
+							      :label="item.label"
+							      :value="item.value">
+							    </el-option>
+							</el-select>
+					  	</p>-->
+							<p>
+								<el-button type="primary" v-on:click="add">添加地址</el-button>
+							</p>
+						</div>
+					</el-card>
+				</el-main>
+
+				<el-footer>
+					&copy; code_zl_shop商铺后台系统
+				</el-footer>
+			</el-container>
+
+		</div>
+		<script>
+			new Vue({
+				el: '#app',
+				data: {
+					//					options: [{
+					//			          value: '超级管理员',
+					//			          label: '超级管理员'
+					//			        }, {
+					//			          value: '其他',
+					//			          label: '其他'
+					//			        },],
+					re_phone: '',
+					username: '',
+					post_code: '',
+					re_provice: '',
+					re_city: '',
+					re_gion: '',
+					re_detail_addr: '',
+				},
+				//事件处理函数对象
+				methods: {
+					//添加管理员的函数
+					add: function() {
+						//获取输入数据
+						var re_phone = this.re_phone;
+						var username = this.username;
+						var post_code = this.post_code;
+						var re_provice = this.re_provice;
+						var re_city = this.re_city;
+						var re_gion = this.re_gion;
+						var re_detail_addr = this.re_detail_addr;
+
+						//发送AJAX请求
+						ajax({
+							type: 'post',
+							url: '/api/2020order_rec_addr_add.php',
+							data: `username=${username}&re_phone=${re_phone}&post_code=${post_code}&re_provice=${re_provice}&re_city=${re_city}&re_gion=${re_gion}&re_detail_addr=${re_detail_addr}`,
+							dataType: 'text',
+							//传一个回调函数，拿到数据以后再调用
+							success: function(data) {
+								//将接收到的数据根据情况进行输出
+								if(data == '1') {
+									alert('新增成功');
+									location.href = "订单页面";
+								} else {
+									alert('新增失败');
+								}
+							}
+						});
+
+					}
+				}
+			});
+		</script>
+
+	</body>
+
+</html>

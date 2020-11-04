@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<link rel="stylesheet" href="css/font.css">
+		<link rel="stylesheet" href="css/index.css">
+		<script src="js/vue.js"></script>
+		<script src="js/index.js"></script>
+		<link rel="stylesheet" href="css/main.css" type="text/css" />
+		<script src="/api/checkuser.php"></script>
+		<script src="js/ajax.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			
+			<el-container id="main">
+			    <el-header height="100px">
+			    	<h1 style="font-size: small;">欢迎您 admin</h1>
+			    	<p style="font-size: small;">修改商品信息</p>
+			    </el-header>
+			    
+			    <!--中间主体栏目-->
+			    <el-main>
+			    	<el-card class="box-card">
+					  <div slot="header" class="clearfix">
+					    <span>修改商品信息</span>
+					  </div>
+					  
+					  <div class="text item" id="admin_add" style="margin: auto;">
+					  	<!--<p>
+					  		<span>*</span> 所属分类： 
+					  		<el-select v-model="cateid" placeholder="请选择分类" size="small">
+							    <el-option
+							      v-for="item in options"
+							      :key="item.value"
+							      :label="item.label"
+							      :value="item.value">
+							    </el-option>
+							</el-select>
+					  	</p>-->
+					  	<p><span>*</span> 商品id： <el-input v-model="id" size="small" readonly="readonly"></el-input></p>
+					  	<p><span>*</span> 商品名称： <el-input v-model="sku_name" size="small"></el-input></p>
+					  	<p><span>*</span> 商品价格： <el-input v-model="price" size="small"></el-input></p>
+					  	<p>商品介绍： <el-input size="small" v-model="sku_desc"></el-input></p>
+					  	<p><span>*</span> 入库数量： <el-input v-model="weight" size="small"></el-input></p>
+					  	<p>图片： <el-input size="small" v-model="sku_default_img"></el-input></p>
+					  	<!--<p>是否使用优惠：
+					  		<el-radio-group v-model="saled">
+							    <el-radio :label="1">是</el-radio>
+							    <el-radio :label="0">不可使用</el-radio>
+							</el-radio-group>
+					  	</p>-->
+
+					  	
+					  	<p style="margin-left: 35%;"><el-button type="primary" @click="save_edit">立即修改</el-button></p>
+					  </div>
+					</el-card>
+			    </el-main>
+			    
+			    <el-footer>
+			    	&copy; code_zl_shop商铺后台系统
+			    </el-footer>
+			  </el-container>
+			
+		</div>
+		<script>
+			new Vue({
+				el:'#app',
+				data:{
+					options: [{
+			          value: 0,
+			          label: '一级分类'
+			        }],
+			        id:'',
+			        sku_name:'',
+			        price:'',
+			        sku_desc:'',
+			        weight:'',
+			        sku_default_img:'',
+				},
+				mounted:function(){
+					var _that=this;
+					//获取ID值
+					var id=location.href.split('=')[1];
+					console.log("当前页面的网址是：",id);
+					
+					//发送AJAX请求到服务器获取当前ID的所有数据
+					ajax({
+						url:'/api/2020sku_one_admin.php?id='+id,
+						success:function(data){
+							//console.log(data); 
+							_that.id=data.id;
+							_that.sku_name=data.sku_name;
+							_that.price=data.price;
+							_that.sku_desc=data.sku_desc;
+							_that.weight=data.weight;
+							_that.sku_default_img=data.sku_default_img;
+						}
+					});
+				},
+				//事件处理函数对象
+				methods:{
+					save_edit:function(){
+						//获取修改以后的新数据
+						var id=this.id;
+						var sku_name=this.sku_name;
+						var price=this.price;
+						var sku_desc=this.sku_desc;
+						var weight=this.weight;
+						var sku_default_img=this.sku_default_img;
+						var id=location.href.split('=')[1];
+						
+						//构造AJAX发送数据到服务器更新数据
+						ajax({
+							type:'post',
+							url:'/api/2020sku_save_edit_admin.php',
+							data:`id=${id}&sku_name=${sku_name}&price=${price}&sku_desc=${sku_desc}&weight=${weight}&sku_default_img=${sku_default_img}`,
+							
+							success:function(data){
+								if(data==1){
+									alert('修改成功');
+									location.href="2020sku_list_admin.html";
+								}else{
+									alert('修改失败');
+								}
+							}
+						});
+					}
+				}
+				
+			});
+		</script>
+		
+	</body>
+</html>

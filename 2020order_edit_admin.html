@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<link rel="stylesheet" href="css/font.css">
+		<link rel="stylesheet" href="css/index.css">
+		<script src="js/vue.js"></script>
+		<script src="js/index.js"></script>
+		<link rel="stylesheet" href="css/main.css" type="text/css" />
+		<script src="/api/checkuser.php"></script>
+		<script src="js/ajax.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			
+			<el-container id="main">
+			    <el-header height="100px">
+			    	<h1 style="font-size: small;">欢迎您 user</h1>
+			    	<p style="font-size: small;">修改用户订单，请谨慎</p>
+			    </el-header>
+			    
+			    <!--中间主体栏目-->
+			    <el-main>
+			    	<a href="2020user_list.html" style="text-decoration: none;margin-left: 95%;">返回</a>
+			    	<el-card class="box-card">
+					  <div slot="header" class="clearfix">
+					    <span>修改用户订单</span>
+					  </div>
+					  <div class="text item" id="admin_add" style="margin-left: 35%;">
+					  	<p><span>*</span> 支付价格： <el-input v-model="price" placeholder="请输入用户名" size="small"></el-input></p>
+					  	<p><span>*</span> 数量： <el-input v-model="num" type="text" size="small"></el-input></p>
+					  	<!--<p>
+					  		<span>*</span> 选择用户组： 
+					  		<el-select v-model="usergroup" placeholder="请选择用户组" size="small">
+							    <el-option
+							      v-for="item in options"
+							      :key="item.value"
+							      :label="item.label"
+							      :value="item.value">
+							    </el-option>
+							</el-select>
+					  	</p>-->
+					  	<p><el-button type="primary" @click="save_edit" style="margin-left: 35%;">立即修改</el-button></p>
+					  </div>
+					</el-card>
+			    </el-main>
+			    
+			    <el-footer>
+			    	&copy; code_zl_shop商铺后台系统
+			    </el-footer>
+			  </el-container>
+			
+		</div>
+		<script>
+			new Vue({
+				el:'#app',
+				data:{
+//					options: [{
+//			          value: '超级管理员',
+//			          label: '超级管理员'
+//			        }, {
+//			          value: '学生',
+//			          label: '学生'
+//			        }, {
+//			          value: '职工',
+//			          label: '职工'
+//			        }],
+			        price:'',
+			        num:'',
+			        
+				},
+				mounted:function(){
+					var _that=this;
+					//获取ID值
+					var id=location.href.split('=')[1];
+					//console.log("当前页面的网址是：",id);
+					
+					//发送AJAX请求到服务器获取当前ID的所有数据
+					ajax({
+						url:'/api/2020order_edit_admin.php?id='+id,
+						success:function(data){
+							//console.log(data); 
+							_that.price=data.real_amount;
+							_that.num=data.product_quantity;
+							
+						}
+					});
+				},
+				//事件处理函数对象
+				methods:{
+					save_edit:function(){
+						//获取修改以后的新数据
+						var price=this.price;
+						var num=this.num;
+						var id=location.href.split('=')[1];
+						console.log("当前页面的网址是：",id);
+						//构造AJAX发送数据到服务器更新数据
+						ajax({
+							type:'post',
+							url:'/api/2020order_edit_admin_save.php',
+							data:`id=${id}&price=${price}&num=${num}`,
+							success:function(data){
+								if(data==1){
+									alert('修改成功');
+									location.href="2020user_list.html";
+								}else if(data.errcode==1004){
+									alert(data.msg);
+								}else{
+									alert("修改失败");
+								}
+							}
+						});
+					}
+				}
+				
+			});
+		</script>
+		
+	</body>
+</html>

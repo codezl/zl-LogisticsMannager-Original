@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<link rel="stylesheet" href="css/font.css">
+		<link rel="stylesheet" href="css/index.css">
+		<script src="js/vue.js"></script>
+		<script src="js/index.js"></script>
+		<link rel="stylesheet" href="css/main.css" type="text/css" />
+		<!--<script src="/api/checkuser.php"></script>-->
+		<script src="js/ajax.js"></script>
+		
+		<style type="text/css">
+			#to_in div{border-radius: 3px;
+			a {text-decoration: none;}	
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			
+			<el-container id="main">
+			    <el-header height="100px" style="background-color: #777674;background-image: url(/img/);">
+			    	<div>
+			    		
+			    	</div>
+			    	<h1 style="font-size: small;">欢迎您</h1>
+			    	<p style="font-size: small;">查看所有订单列表</p>
+			    <div id="to_in">
+			    	<div id="" style="font-size: small;margin-left: 90%;background-color: violet;width: 4em;display: inline-block;display: inline-block;float: left;position: absolute;border-radius: 2px;" @click="look_com()">
+			    	<span >发现</span>
+			    	</div>
+			    	<div style="font-size: small;margin-left: 80%;background-color: #FCEFA1;width: 4em;display: inline-block;float: left;position: absolute;" @click="look_com()">
+			    	<span>收货地址</span>
+			    	</div>
+			    	<div id="" style="font-size: small;margin-left: 70%;background-color: #FCEFA1;width: 4em;display: inline-block;display: inline-block;float: left;position: absolute;" @click="look_com()">
+			    	<span ><a style="text-decoration: none;" href="http://localhost/2020order_list_deli.html">接单广场</a></span>
+			    	</div>
+			    	<div id="" style="font-size: small;margin-left: 60%;background-color: #FCEFA1;width: 4em;display: inline-block;display: inline-block;float: left;position: absolute;" @click="look_com()">
+			    	<span><a style="text-decoration: none;" href="http://localhost/2020order_comment_all.html">商品评论</a></span>
+			    	</div>
+			    </div>
+			    	
+
+			    </el-header>
+			    
+			    <!--中间主体栏目-->
+			    <el-main>
+			    	<el-card class="box-card">
+					  <div slot="header" class="clearfix">
+					    <span>订单管理</span>
+					    
+					  </div>
+					  <div class="text item" id="goods_list">
+					  	<!--搜索框-->
+					  	<div id="searchform">
+					  		
+							<span>内容：</span>
+							<el-input v-model="keywords" placeholder="请输入商品相关信息或单号" size="mini"></el-input>
+							<el-button type="success" size="mini" @click="search">搜索</el-button>
+							<el-button type="success" size="mini" @click="seeall()">查看购买过的所有商品</el-button>
+					  	</div>
+						
+						<!--数据表格-->
+						<el-table :data="tableData" style="width: 100%">
+						    <el-table-column label="订单id">
+						      <template slot-scope="scope">
+						        <span>{{scope.row.id}}</span>
+						      </template>
+						    </el-table-column>
+						    <el-table-column label="订单号" width="200px">
+						      <template slot-scope="scope">
+						        <span>{{ scope.row.order_sn}}</span>
+						      </template>
+						    </el-table-column>
+						    <el-table-column label="收件人">
+						      <template slot-scope="scope">
+						        <span>{{ scope.row.receiver_name }}</span>
+						      </template>
+						    </el-table-column>
+						    <el-table-column label="收件地址">
+						      <template slot-scope="scope">
+						        <span>{{ scope.row.receiver_detail_address }}</span>
+						      </template>
+						    </el-table-column>
+						    <el-table-column label="订单价格">
+						      <template slot-scope="scope">
+						        <span style="color:#f00;">{{ scope.row.total_amount }}</span>
+						      </template>
+						    </el-table-column>
+						    <el-table-column label="订单状态">
+						      <template slot-scope="scope">
+						        <span v-if="scope.row.serv_sta==null">未接单</span>
+						        <span v-if="scope.row.serv_sta==0">配送中</span>
+						        <span v-if="scope.row.status==1 && scope.row.deli_sta==1 && scope.row.serv_sta==1">完成收货</span>
+						        <span v-if="scope.row.status==1 && scope.row.deli_sta==2 && scope.row.serv_sta==1">退单中...</span>
+						        <span v-if="scope.row.status==1 && scope.row.deli_sta==3 && scope.row.serv_sta==1">退单失败！</span>
+						        <span v-if="scope.row.status==1 && scope.row.deli_sta==4 && scope.row.serv_sta==1">退单成功</span>
+						        <!--<span v-else>订单异常</span>-->
+						      </template>
+						    </el-table-column>
+						    <el-table-column label="支付价格">
+						      <template slot-scope="scope">
+						        <span>{{ scope.row.pay_amount }}</span>
+						      </template>
+						    </el-table-column>
+						    <el-table-column label="联系电话">
+						      <template slot-scope="scope">
+						        <span>{{ scope.row.receiver_phone }}</span>
+						      </template>
+						    </el-table-column>
+						    </el-table-column>
+						    <el-table-column label="管理">
+						      <template slot-scope="scope">
+						        <i class="el-icon-edit" v-if="scope.row.status==0" @click="edit(scope.row.id)">改</i>
+						        <el-button size="mini" @click="checko(scope.row.id)">查看订单详情</el-button><br />
+						        <i v-if="(scope.row.status==1 && scope.row.deli_sta==1 && scope.row.serv_sta==1) || (scope.row.status==1 && scope.row.deli_sta==4 && scope.row.serv_sta==1)" class="el-icon-delete" @click="del(scope.row.id)">删</i>
+						        <i v-if="scope.row.serv_sta==1 && scope.row.deli_sta==0" @click="upd_sku(scope.row.id,scope.row.order_sn),confirm(scope.row.id,scope.row.serv_sta)"><el-button size="mini">确认收货</el-button></i>
+						        <i v-if="scope.row.serv_sta==1 && scope.row.deli_sta==0" @click="re_or(scope.row.id,scope.row.serv_sta)">退货</i>
+						        <i v-if="scope.row.serv_sta==1 && scope.row.deli_sta==1">提交评价</i>
+						        <i v-if="scope.row.status==''" >无效订单</i> 
+						      </template>
+						    </el-table-column>
+						</el-table>
+					  	
+					  	<!--分页-->
+					  	<el-pagination background layout="prev, pager, next" :page-count="pagecount" @current-change="changepage" :current-page.sync="curpage"></el-pagination>
+					  </div>
+					</el-card>
+			    </el-main>
+			    
+			    <el-footer>
+			    	&copy;code_zl_shop商铺后台系统
+			    </el-footer>
+			  </el-container>
+			
+		</div>
+		<script>
+			new Vue({
+				el:'#app',
+				data:{
+					options: [{
+			          value: 0,
+			          label: '所有分类'
+			        }],
+			        cateid: '',
+			        keywords:'',
+			        tableData: [],
+			        pagecount:1,
+			        curpage:1,
+				},
+				//编写生命周期函数，渲染初始化后去读取数据
+				mounted:function(){
+					 //
+					this.setcook();
+					this.showpage(1);
+				},
+				//自定义函数
+				methods:{
+					//设置cookie
+					setcook:function(){
+						var _that=this;
+					//获取ID值
+					var id=location.href.split('=')[1];
+					console.log("当前页面的网址是：",id);
+					
+						//发送AJAX请求到服务器获取当前ID的所有数据
+					ajax({
+						url:'/api/2020order_chklo.php?id='+id,
+						success:function(data){
+								//将执行结果显示出来
+								if(data==1){
+//									alert('欢迎来到订单管理');
+//									location.href="2020order_edit_1.html";
+									_that.showpage(1);
+								}else{
+									alert('登陆状态异常');
+								}
+							}
+						
+					});
+					},
+					
+					//改变页码时重新显示数据
+					changepage:function(page){
+						this.showpage(page);
+					},
+					
+					checko:function(id){
+						location.href="2020order_list_1_1.html?id="+id;
+					},
+					seeall:function(){
+						location.href="2020order_list.html";
+					},
+					
+					upd_sku:function(id,order_sn){
+						ajax({
+							url:'/api/2020order_list_1_up_sku.php?order_sn='+order_sn+'&id='+id,
+							success:function(data){
+								//将执行结果显示出来
+								if(data.errcode==0){
+									alert('销售数量更新');
+									
+								}else{
+									alert('销售量未更新');
+								}
+							}
+						})
+					},
+					
+					confirm:function(id,serv_sta){
+						var _that=this;
+						var r = confirm("亲，您确定完成该订单吗");
+						if(r==true){
+							//构造AJAX向服务器发起删除主动，传ID值
+//						var id=location.href.split('=')[1];
+						ajax({
+							url:'/api/2020order_list_1_conf.php?id='+id+'&serv_sta='+serv_sta,
+							success:function(data){
+								//将执行结果显示出来
+								if(data.errcode==0){
+									location.href="2020order_list_1.html";
+									_that.showpage();
+								}else{
+									alert('订单状态异常');
+								}
+							}
+						})
+					}
+					},
+					
+					
+					
+					re_or:function(id,serv_sta){
+						var _that=this;
+						var r = confirm("亲，您确定申请退回该订单吗");
+						if(r==true){
+							//构造AJAX向服务器发起删除主动，传ID值
+//						var id=location.href.split('=')[1];
+						ajax({
+							url:'/api/2020order_list_1_re.php?id='+id+'&serv_sta='+serv_sta,
+							success:function(data){
+								//将执行结果显示出来
+								if(data.errcode==0){
+                                //可在后台中导出提示，是代码易于阅读
+									alert('退货申请成功，感谢您的使用');
+									location.href="2020order_list_1.html";
+//									_that.showpage();
+								}else{
+									alert('订单异常，退货申请失败');
+								}
+							}
+						})
+					}
+					},
+					
+					look_com:function(){
+						//var id=location.href.split('=')[1];
+						location.href="2020comment_all.html?id="+id;
+					},
+					
+					edit:function(id){
+						location.href="2020order_edit_1.html?id="+id;
+					},
+					
+					comment_or:function(id){
+						location.href="2020order_comment_1.html?id="+id;
+					},
+					look_com:function(){
+						location.href="2020order_comment_all.html";
+					},
+					//删除分类的事件处理函数
+					del:function(id){
+						var _that=this;
+						var r = confirm("亲，您确定删除该订单吗");
+						if(r==true){
+						//构造AJAX向服务器发起删除主动，传ID值
+//						var id=location.href.split('=')[1];
+						ajax({
+							url:'/api/2020order_user_del.php?id='+id,
+							success:function(data){
+								//将执行结果显示出来
+								if(data.errcode==0){
+									alert('删除成功');
+//									location.href="2020order_edit_1.html";
+									_that.showpage();
+								}else{
+									alert('删除失败');
+								}
+							  }
+						});
+						}
+					},
+					
+					
+					//根据页码显示当前页的数据
+					showpage:function(page){
+						var _that=this;
+						var cateid=this.cateid;
+						var keywords=this.keywords;
+						var id=5;//取session中的用户id
+//						var id=location.href.split('=')[1];
+						ajax({
+							url:'/api/2020order_list_1.php?page='+page+'&keywords='+keywords+'&id='+id,
+							success:function(data){
+								//console.log(data);
+								_that.pagecount=data.pop(); //将数据携带的总页数弹出，并在页面上显示出页码表
+								
+								_that.tableData=data; //获取到数据以后将原有的数据替换掉
+							}
+						});
+					},
+					//点击搜索时执行的函数
+					search:function(){
+						this.showpage(1);
+						this.curpage=1; //搜索数据渲染完成后，将页面切换到第一页
+					}
+				}
+			});
+		</script>
+		
+	</body>
+</html>

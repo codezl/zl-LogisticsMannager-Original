@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+		<!--<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>-->
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<link rel="stylesheet" href="css/font.css">
+		<link rel="stylesheet" href="css/index.css">
+		<script src="js/vue.js"></script>
+		<script src="js/index.js"></script>
+		<link rel="stylesheet" href="css/main.css" type="text/css" />
+
+		<script src="js/ajax.js"></script>
+	</head>
+
+	<body>
+		<div id="" style="position: absolute;top: 0;left: 0;right: 0;bottom: 0;">
+			<div id="app">
+
+				<el-container id="main">
+					<el-header height="100px">
+						<h1 style="font-size: small;">欢迎您 user</h1>
+						<p style="font-size: small;">注册用户帐号</p>
+					</el-header>
+
+					<!--中间主体栏目-->
+					<el-main>
+						<el-card class="box-card">
+							<div slot="header" class="clearfix">
+								<span>注册帐号</span>
+							</div>
+							<div class="text item" id="admin_add" style="margin-left: 40%;">
+								<p><span>*</span> 用户名：
+									<el-input v-model="username" placeholder="请输入用户名，只可设置一次" size="small" @blur="blurEvent()"></el-input>
+								</p>
+								<p><span>*</span> 昵称：
+									<el-input v-model="nickname" placeholder="请输入昵称可改" size="small" @change="changeEvent()"></el-input>
+								</p>
+								<p><span></span> 电话：
+									<el-input v-model="phone" placeholder="请输入联系电话" size="small"></el-input>
+								</p>
+								<!--<p><span></span> 生日： <el-input v-model="birthday" placeholder="请输入生日" size="small"></el-input></p>-->
+
+								<p><span>*</span> 密码：
+									<el-input v-model="pwd" type="password" placeholder="请输入密码" size="small" @change="changeEvent()"></el-input>
+								</p>
+								<p><span>*</span> 确认密码：
+									<el-input v-model="pwd2" type="password" placeholder="请确认密码" size="small" @change="changeEvent()"></el-input>
+								</p>
+								<template>
+									<span></span> 生日：
+									<div class="block">
+										<el-date-picker v-model="value2" align="right" type="date" placeholder="选择日期" :picker-options="pickerOptions1">
+										</el-date-picker>
+									</div>
+								</template>
+								<p>
+									<span>*</span> 选择用户组：
+									<el-select v-model="usergroup" placeholder="请选择用户组" size="small">
+										<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+										</el-option>
+									</el-select>
+								</p>
+								<p>
+									<el-button type="primary" v-on:click="add">注册账号</el-button>
+								</p>
+							</div>
+						</el-card>
+					</el-main>
+
+					<el-footer>
+						&copy; code_zl_shop商铺后台系统
+					</el-footer>
+				</el-container>
+
+			</div>
+		</div>
+		<script>
+			new Vue({
+				el: '#app',
+				data: {
+					options: [{
+						value: '0',
+						label: '普通会员'
+					}, {
+						value: '1',
+						label: '配送员'
+					}],
+					usergroup:'',
+					username: '',
+					nickname: '',
+					phone: '',
+					birthday: '',
+					pwd: '',
+					pwd2: '',
+
+					pickerOptions1: {
+						disabledDate(time) {
+							return time.getTime() > Date.now();
+						},
+						shortcuts: [{
+							text: '今天',
+							onClick(picker) {
+								picker.$emit('pick', new Date());
+							}
+						}, {
+							text: '昨天',
+							onClick(picker) {
+								const date = new Date();
+								date.setTime(date.getTime() - 3600 * 1000 * 24);
+								picker.$emit('pick', date);
+							}
+						}, {
+							text: '一周前',
+							onClick(picker) {
+								const date = new Date();
+								date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+								picker.$emit('pick', date);
+							}
+						}]
+					},
+					value2: '',
+
+				},
+
+				//事件处理函数对象
+				methods: {
+					blurEvent() {
+						var str = this.username;
+						var str1 = str.split(" ").join("");
+						var str2 = str1.length;
+						console.log(str2);
+						if(str.length == 0) {
+							alert("输入值为空")
+						} else if(str !== str1) {
+							alert("用户名不能包含空字符")
+						}
+
+					},
+					//添加管理员的函数
+					add: function() {
+						//获取输入数据
+						var username = this.username;
+						var nickname = this.nickname;
+						var phone = this.phone;
+						var birthday = this.value2;
+						var pwd = this.pwd;
+						var pwd2 = this.pwd2;
+						var str = username.split(" ").join("");
+						var str1 = nickname.split(" ").join("");
+						console.log(birthday);
+						if(pwd !== pwd2 || pwd.length == 0 || pwd.length<8) {
+							alert("两次密码输入不一致或为空或长度不够");
+						} else if(username.length == 0 || username.length !== str.length || username == undefined) {
+							alert("用户名格式错误");
+						} else if(nickname.length == 0 || nickname.length !== str1.length || nickname == undefined) {
+							alert("昵称格式错误");
+						} else {
+							//发送AJAX请求
+							ajax({
+								type: 'post',
+								url: '/api/2020user_save_register.php',
+								data: `username=${username}&nickname=${nickname}&phone=${phone}&birthday=${birthday}&pwd=${pwd}&pwd2=${pwd2}`,
+								dataType: 'text',
+								//传一个回调函数，拿到数据以后再调用
+								success: function(data) {
+									//将接收到的数据根据情况进行输出
+									if(data == '1') {
+										alert('注册成功');
+										location.href = "http://passport.gmall.com:8085/index";
+									} else {
+										alert('注册失败');
+									}
+								}
+							});
+						}
+					}
+				}
+			});
+		</script>
+
+	</body>
+
+</html>

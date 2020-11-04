@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>code_zl_shop商铺后台系统</title>
+		<!-- 引入样式 -->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+	<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+	<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <link rel="stylesheet" href="css/index.css" type="text/css"/>
+    <script src="/api/checkuser.php"></script>
+
+    <style>
+    	.el-aside{background: #E6A23C;background-image:url(/img/u=2115524945,144926733&fm=26&gp=0.jpg);background-position:left;color:#fff;text-align:right;}
+		.el-aside a:link,.el-aside a:visited{color:#eee;text-decoration:none;}
+		.el-aside a:hover{color: #FD9232;font-weight:bold;}
+		.el-aside>h1{font:24px/60px 微软雅黑;padding-right:10px;}
+		.el-aside>p{padding-right:16px;font:12px/20px 微软雅黑;}
+    </style>
+
+    	
+    </script>
+	</head>
+	<body>
+		<div id="app">
+			<el-container>
+				<!--左边导航-->
+				
+				
+  <el-aside width="220px" style="background-image: url(/img/u=2115524945,144926733&fm=26&gp=0.jpg);">
+  	<h1 style="font-size: 14px;font-family: PingFang SC;color: royalblue;"><span style="color: #FFAD17;">code_zl_shop</span>商铺后台系统</h1>
+  	<p style="font-size: small;display: inline-block;color: lightslategray;font-size: 10px;">你好,<p style="width: 60px;display: inline-block;height: 5px;"><el-input style="font-size: small;" readonly="readonly" v-model="user_name"></el-input></p></p>
+	<!--<p>你好： <el-input v-model="username" placeholder="请输入用户名" type=button size="small" style="display: inline-block;"></el-input></p>-->
+  	<p><a href="main.html" target="main" style="color: #91A5AE;">管理首页</a> | <a a href="/api/2020loginout.php" style="color: #91A5AE;">退出系统</a></p>
+  	
+  		
+  	<!--导航栏左侧默认打开1-->
+  	<el-menu :default-openeds="['1','2','3','4']">
+      <el-submenu index="1" style="background: #008800;border-radius: 6px 0 0 6px;">
+         <template slot="title">消息</template>
+			        <el-menu-item index="1-2"><a href="2020order_comment_all.html" target="main">评论消息</a></el-menu-item>
+			        <el-menu-item index="1-1"><a href="2020msg-index.html" target="main">用户消息</a></el-menu-item>
+			      </el-submenu>
+			      
+      <el-submenu index="2" style="background: #008800;border-radius: 6px 0 0 6px;">
+        <template slot="title">商品管理</template>
+          <el-menu-item index="2-1" style="background: #008800;"><a href="http://127.0.0.1:8888/#/baseinfo/prop/list" target="main">商品添加</a></el-menu-item>
+          <el-menu-item index="2-2"><a href="2020sku_list_admin.html" target="main">商品管理</a></el-menu-item>
+      </el-submenu>
+      
+      <el-submenu index="3" style="background: #008800;border-radius: 6px 0 0 6px;">
+        <template slot="title">账号管理</template>
+          <el-menu-item index="3-1"><a href="/2020admin_add.html" target="main">添加管理员账号</a></el-menu-item>
+          <el-menu-item index="3-2" style="background: #008800;"><a href="/2020admin_list.html" target="main">管理员账号管理</a></el-menu-item>
+          <el-menu-item index="3-2" style="background: #008800;"><a href="/2020user_list.html" target="main">用户账号管理</a></el-menu-item>
+          <el-menu-item index="3-3"><a href="/2020admin_changepwd.html" target="main">密码修改</a></el-menu-item>
+       </el-submenu>
+       <el-submenu index="4" style="background: #008800;border-radius: 6px 0 0 6px;">
+        <template slot="title" >系统管理</i></template>
+
+          <el-menu-item index="4-2" style="background: #4E9A00;"><a href="main_1.html" target="main">系统公告</a></el-menu-item>
+          <el-menu-item index="4-1" style="background:#008800 ;"><a href="#">系统设置</a></el-menu-item>
+           </el-submenu>
+      </el-submenu>
+    </el-menu>
+  </el-aside>
+ 
+           <!--右边主体
+           -->
+           <iframe src="2020main.html" name="main"></iframe>
+           
+
+
+			</el-container>
+		</div>
+		<script>
+			new Vue({
+				el:'#app',
+				data:{
+					user_name:'店主',
+					
+				},
+				
+				mounted:function(){
+					 //显示用户名
+					ajax({
+						url:'/api/2020user_get_name.php?id='+id,
+						success:function(data){
+							//console.log(data); 
+							_that.user_name=data.uasername;
+//							_that.num=data.product_quantity;
+							
+						}
+					});
+					
+				},
+			});
+		</script>
+	</body>
+</html>

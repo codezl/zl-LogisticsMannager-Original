@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<link rel="stylesheet" href="css/font.css">
+		<link rel="stylesheet" href="css/index.css">
+		<script src="js/vue.js"></script>
+		<script src="js/index.js"></script>
+		<link rel="stylesheet" href="css/main.css" type="text/css" />
+		
+		<script src="js/ajax.js"></script>
+		<style type="text/css">
+			.desc {max-width: 10em;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
+		    .desc:hover{color:#f00;max-width: 100em;overflow: auto;white-space: normal;text-overflow: clip;}
+		    .mang {font-size: 11px;color: #C19E66;}
+		    .mang:hover{font-size: 16px;color: #FA9162;}
+		    
+
+			.el-carousel__item h3 {
+				color: #475669;
+				font-size: 14px;
+				opacity: 0.75;
+				line-height: 150px;
+				margin: 0;
+			}
+			
+			.el-carousel__item:nth-child(2n) {
+				background-color: #99a9bf;
+				background-image: url(/img/back1.jpg);
+			}
+			
+			.el-carousel__item:nth-child(2n+1) {
+				background-color: #d3dce6;
+				background-image: url(/img/back2.jpeg);
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			
+			<el-container id="main">
+			    <div class="block">
+					<span class="demonstration" style="margin-left: 2%;display: inline-block;"><strong>欢迎查看本店商品</strong></span>
+					<p style="float: right;display: inline-block;font-size: 10px;margin-right: 40px;"><a href="http://localhost/2020order_list_1.html" style="text-decoration: none;"><em style="font-family: elephant;color: #FF9933;">订单首页</em></a></p>
+					<p style="float: right;display: inline-block;font-size: 10px;margin-right: 5px;">热线电话：<em style="font-family: elephant;color: #FF9933;">13690910122</em> , 24小时竭诚为您服务</p>
+					<el-carousel height="50px" style="width: 80%;margin: auto;">
+						<el-carousel-item :interval="6000" v-for="item in 4" :key="item">
+							<h3>{{ item }}</h3>
+						</el-carousel-item>
+					</el-carousel>
+				</div>
+			    
+			    <!--中间主体栏目-->
+			    <el-main>
+			    	<el-card class="box-card">
+					  <div slot="header" class="clearfix">
+					    <span>帐号管理</span>
+					  </div>
+					   
+					  	
+					  <div class="text item" id="user_list">
+					  	<!--搜索框-->
+					  	<div id="searchform">
+							<span>关键词：</span>
+							<el-input v-model="keywords" placeholder="请输入订单号或商品信息" size="mini"></el-input>
+							<el-button type="success" size="mini" @click="search">搜索</el-button>
+							<el-button type="success" size="mini" @click="search0()">好评</el-button>
+							<el-button type="success" size="mini" @click="search1()">中评</el-button>
+							<el-button type="success" size="mini" @click="search2()">差评</el-button>
+							<el-button size="mini" type="danger" @click="ret()">返回</el-button>
+					  	</div>
+					  	
+						<el-table :data="tableData" style="width: 100%">
+						    <el-table-column label="所属订单">
+						      <template slot-scope="scope">
+						        <span>{{ scope.row.order_id }}</span>
+						      </template>
+						    </el-table-column>
+						    
+						    <el-table-column label="评论内容">
+						      <template slot-scope="scope">
+						        <span class="desc" style="color: #555555;">{{ scope.row.comment_tx }}</span>
+						      </template>
+						    </el-table-column>
+						    
+						    <el-table-column label="关联商品">
+						      <template slot-scope="scope">
+						        <span class="desc">{{ scope.row.sku_name_list }}</span>
+						      </template>
+						    </el-table-column>
+						    
+						    <el-table-column label="评论时间">
+						      <template slot-scope="scope">
+						        <span class="desc">{{ scope.row.cre_time }}</span>
+						      </template>
+						    </el-table-column>
+						    
+						    <el-table-column label="管理">
+						      <template slot-scope="scope">
+						        <!--<el-button size="mini" @click="edit(scope.row.id)">修改</el-button>
+						        <el-button size="mini" @click="checko(scope.row.id)">查看用户订单</el-button>
+						        <el-button size="mini" type="danger" @click="del_admin(scope.row.id)">删除</el-button>-->
+						        <span class="mang">内容在考虑...</span>
+						      </template>
+						    </el-table-column>
+						</el-table>
+
+					  	<!--分页-->
+					  	<el-pagination background layout="prev, pager, next" :page-count="pagecount" @current-change="changepage" :current-page.sync="curpage"></el-pagination>
+					  
+					  </div>
+					</el-card>
+			    </el-main>
+			    
+			    <el-footer>
+			    	&copy;code_zl_shop商铺后台系统  
+			    </el-footer>
+			  </el-container>
+			
+		</div>
+		<script>
+			new Vue({
+				el:'#app',
+				data:{
+					tableData: [],
+					keywords:'',
+					pagecount:1,
+			        curpage:1,
+				},
+				//定义生命周期函数，初始化渲染完成以后通过AJAX获取数据
+				mounted:function(){
+					this.showpage(1);
+				},
+				//自定义函数集
+				methods:{
+					//改变页码时重新显示数据
+					changepage:function(page){
+						this.showpage(page);
+					},
+					
+					
+					
+					//删除数据的事件处理函数
+					del_admin:function(id){
+						var _that=this;
+						//构造AJAX请求发送ID作为删除的数据标识
+						ajax({
+							url:'/api/2020user_del.php?id='+id,
+							success:function(data){
+								//通过返回的JSON对象判断输出结果
+								if(data.errcode==0){
+									alert('删除成功');
+									_that.showpage(1); //删除成功后刷新页面
+								}else if(data.errcode==1004){
+									alert(data.msg);
+								}else{
+									alert("删除失败");
+								}
+							}
+						});
+					},
+					//渲染页面的函数
+//					show:function(){
+//						var _that=this; //将this指向的内存空间（Vue对象本身）zan存到其它变量
+//						//通过AJAX请求所有的管理员数据
+//						ajax({
+//							url:'/api/2020user_all.php',
+//							success:function(data){
+//								_that.tableData=data; //修改初始化的数据为获取的管理员数据
+//							}
+//						});
+//					},
+
+					ret:function(){
+//						var id=location.href.split('=')[1];
+						location.href="2020order_list_1.html";
+					},
+					//点击修改按钮时执行的函数
+					edit:function(id){
+
+						location.href="2020user_edit.html?id="+id;
+					},
+					checko:function(id){
+
+						location.href="2020order_admin.html?id="+id;
+					},
+					//根据页码显示当前页的数据/好评
+					search0:function(){
+						var _that=this;
+						var keywords=this.keywords;
+						
+						ajax({
+							url:'/api/2020comment_good.php?&keywords='+keywords,
+							success:function(data){
+								//console.log(data);
+								_that.pagecount=data.pop(); //将数据携带的总页数弹出，并在页面上显示出页码表
+								
+								_that.tableData=data; //获取到数据以后将原有的数据替换掉
+							}
+						});
+						
+					},
+					//中评
+					search1:function(){
+						var _that=this;
+						var keywords=this.keywords;
+						
+						ajax({
+							url:'/api/2020comment_normal.php?&keywords='+keywords,
+							success:function(data){
+								//console.log(data);
+								_that.pagecount=data.pop(); //将数据携带的总页数弹出，并在页面上显示出页码表
+								
+								_that.tableData=data; //获取到数据以后将原有的数据替换掉
+							}
+						});
+						
+					},
+					//差评
+					search2:function(){
+						var _that=this;
+						var keywords=this.keywords;
+						
+						ajax({
+							url:'/api/2020comment_bad.php?&keywords='+keywords,
+							success:function(data){
+								//console.log(data);
+								_that.pagecount=data.pop(); //将数据携带的总页数弹出，并在页面上显示出页码表
+								
+								_that.tableData=data; //获取到数据以后将原有的数据替换掉
+							}
+						});
+						
+					},
+					
+					showpage:function(page){
+						var _that=this;
+						var keywords=this.keywords;
+						
+						ajax({
+							url:'/api/2020comment_all.php?page='+page+'&keywords='+keywords,
+							success:function(data){
+								//console.log(data);
+								_that.pagecount=data.pop(); //将数据携带的总页数弹出，并在页面上显示出页码表
+								
+								_that.tableData=data; //获取到数据以后将原有的数据替换掉
+							}
+						});
+					},
+					//点击搜索时执行的函数
+					search:function(){
+						this.showpage(1);
+						this.curpage=1; //搜索数据渲染完成后，将页面切换到第一页
+					}
+				}
+			});
+		</script>
+		
+	</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>code_zl_shop商铺后台系统</title>
+		<!-- 引入样式 -->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!-- 引入组件库 -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		
+   <style>
+			html,body{margin:0;padding:0;height:100%;}
+			#app{background-image: url(img/3977925722c0f955d69a7fe16c4b2da0.jpg);background-repeat: no-repeat;background-size:100% 100%;height:100%;}
+			a{color: #FF9933;}
+			#myform{background-image:url(/img/back2.jpeg);color:#444;margin-top:100px; border-radius:10px;}
+			#myform h1{text-align:center;border-bottom:1px solid #ccc; margin:0 0 40px 0;padding:12px 0;}
+			#myform p{padding:0 40px;}
+			#myform .btn{text-align:center;padding-bottom:40px;}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<div  style="margin: -30% auto;width:100%;text-align:center;display: inline-block;white-space: nowrap;position: fixed;">
+				<video autoplay loop controls="controls" >
+					<source src="img/d78b82ed51_4530312_hd.mp4" type="video/mp4"></source>
+				</video>
+			</div>
+			<el-row>
+			  <el-col :span="8" :offset="8" id="myform" name="form1">
+			  	<h1 style="color:#FFFFFF;">code_cat_shop商铺后台系统登录</h1>
+			  	<p>
+			  		<el-input placeholder="请输入用户名/账号" v-model="username" prefix-icon="el-icon-user"></el-input>
+			  	</p>
+			  	<p>
+			  		<el-input type="password" placeholder="请输入密码" v-model="password" prefix-icon="el-icon-view"></el-input>
+			  	</p>
+			  	<p class="btn">
+			  		<el-button type="primary" @click="checklogin">登录</el-button>
+			  	</p>
+			  	<!--<p class="btn" style="color: #FEF1EC;">
+			  		<span>还没注册点击 </span><a href="http://localhost/2020user_register.html" target="_blank" style="text-decoration: none;">注册</a>
+			  	</p>-->
+			  </el-col>
+			</el-row>
+		</div>
+		
+		<script>
+			new Vue({
+				el:'#app',
+				data:{
+					username:'',
+					password:'',
+				},
+				//定义methods方法，提供事件处理函数（自定义函数）
+				methods:{
+				   checklogin:function(){
+						//获取到用户名和 密码数据
+						var username=this.username;
+						var password=this.password;
+						
+						//构造 AJAX请求，将数据发送到服务器端，定位置
+						var ajax=new XMLHttpRequest();
+						ajax.open('post','/api/checklogin.php');
+						ajax.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+						ajax.send('user='+username+'&pass='+password);
+						//绑定事件发生
+						ajax.onreadystatechange=function(){
+							if(ajax.readyState==4 && ajax.status==200){
+								var data=ajax.responseText;
+								
+								//如果返回值是 0 登陆失败，1登陆成功
+								if(data==1){
+									alert('登录成功');
+									location.href='./2020index.html';
+								}else if(data==0){
+									alert('用户名或密码错误，请重新输入');
+								}else{
+									alert('账户冻结，请联系无敌管理员');
+								}
+							}
+						}
+					}
+				}
+			});
+			
+		</script>
+		
+	</body>
+</html>

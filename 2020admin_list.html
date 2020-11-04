@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<link rel="stylesheet" href="css/font.css">
+		<link rel="stylesheet" href="css/index.css">
+		<script src="js/vue.js"></script>
+		<script src="js/index.js"></script>
+		<link rel="stylesheet" href="css/main.css" type="text/css" />
+		<script src="/api/checkuser.php"></script>
+		<script src="js/ajax.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			
+			<el-container id="main">
+			    <el-header height="100px">
+			    	<h1 style="font-size: small;">欢迎您 admin</h1>
+			    	<p style="font-size: small;">查看所有管理员帐号</p>
+			    </el-header>
+			    
+			    <!--中间主体栏目-->
+			    <el-main>
+			    	<el-card class="box-card">
+					  <div slot="header" class="clearfix">
+					    <span>帐号管理</span>
+					  </div>
+					  <div class="text item">
+					  	
+					  	
+						<el-table :data="tableData" style="width: 100%">
+						    <el-table-column label="用户名称">
+						      <template slot-scope="scope">
+						        <span>{{ scope.row.username }}</span>
+						      </template>
+						    </el-table-column>
+						    
+						    <el-table-column label="用户组">
+						      <template slot-scope="scope">
+						        <span>{{ scope.row.usergroup }}</span>
+						      </template>
+						    </el-table-column>
+						    
+						    <el-table-column label="管理">
+						      <template slot-scope="scope">
+						        <el-button size="mini" @click="edit(scope.row.id)">修改</el-button>
+						        <el-button size="mini" type="danger" @click="del_admin(scope.row.id)">删除</el-button>
+						      </template>
+						    </el-table-column>
+						</el-table>
+
+					  	
+					  </div>
+					</el-card>
+			    </el-main>
+			    
+			    <el-footer>
+			    	&copy;code_zl_shop商铺管理系统
+			    </el-footer>
+			  </el-container>
+			
+		</div>
+		<script>
+			new Vue({
+				el:'#app',
+				data:{
+					tableData: []
+				},
+				//定义生命周期函数，初始化渲染完成以后通过AJAX获取数据
+				mounted:function(){
+					this.show();
+				},
+				//自定义函数集
+				methods:{
+					//删除数据的事件处理函数
+					del_admin:function(id){
+						var _that=this;
+						//构造AJAX请求发送ID作为删除的数据标识
+						ajax({
+							url:'/api/admin_del.php?id='+id,
+							success:function(data){
+								//通过返回的JSON对象判断输出结果
+								if(data.errcode==0){
+									alert('删除成功');
+									_that.show(); //删除成功后刷新页面
+								}else{
+									alert('删除失败，请重试');
+								}
+							}
+						});
+					},
+					//渲染页面的函数
+					show:function(){
+						var _that=this; //将this指向的内存空间（Vue对象本身）zan存到其它变量
+						//通过AJAX请求所有的管理员数据
+						ajax({
+							url:'/api/2020admin_all.php',
+							success:function(data){
+								_that.tableData=data; //修改初始化的数据为获取的管理员数据
+							}
+						});
+					},
+					//点击修改按钮时执行的函数
+					edit:function(id){
+
+						location.href="2020admin_edit.html?id="+id;
+					}
+				}
+			});
+		</script>
+		
+	</body>
+</html>

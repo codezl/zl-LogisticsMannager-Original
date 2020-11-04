@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<link rel="stylesheet" href="css/font.css">
+		<link rel="stylesheet" href="css/index.css">
+		<script src="js/vue.js"></script>
+		<script src="js/index.js"></script>
+		<link rel="stylesheet" href="css/main.css" type="text/css" />
+		<!--<script src="/api/checkuser.php"></script>-->
+		<script src="js/ajax.js"></script>
+	</head>
+	<body>
+		<div id="app">
+			
+			<el-container id="main">
+			    <el-header height="100px">
+			    	<h1 style="font-size: small;">欢迎您 user</h1>
+			    	<p style="font-size: small;">接单信息录入</p>
+			    </el-header>
+			    
+			    <!--中间主体栏目-->
+			    <el-main>
+			    	<el-card class="box-card">
+					  <div slot="header" class="clearfix">
+					    <span>修改订单信息</span>
+					  </div>
+					  <div class="text item" id="admin_add" style="margin-left: 40%;">
+					  	<span>地址：</span>
+					  	<p><span>*</span> 收件人id实验后隐藏： <el-input v-model="member_id" readonly="readonly" placeholder="收件人的id实现测试后私密" size="small"></el-input></p>
+					  	<p><span>*</span> 订单号： <el-input v-model="order_sn" readonly="readonly" placeholder="收件人的id实现测试后私密" size="small"></el-input></p>
+					  	<p><span>*</span> 省： <el-input v-model="receiver_province" readonly="readonly" placeholder="输入省" size="small"></el-input></p>
+					  	<p><span>*</span> 市： <el-input v-model="receiver_city" type="text" readonly="readonly" placeholder="输入市" size="small"></el-input></p>
+					  	<p><span>*</span> 街道： <el-input v-model="receiver_region" type="text" readonly="readonly" placeholder="具体地址或门牌" size="small"></el-input></p>
+                        <span>联系电话</span>
+					  	<p><span>*</span> 联系方式： <el-input v-model="receiver_phone" type="text" readonly="readonly" placeholder="正确的联系方式" size="small"></el-input></p>
+					  	<p><span>*</span> 收件人： <el-input v-model="receiver_name" type="text" readonly="readonly" placeholder="收件人" size="small"></el-input></p>
+					  	<p><span>*</span> 派件人电话： <el-input v-model="deli_phone" type="text" placeholder="请输入派件人电话" size="small"></el-input></p>
+					  	<p><el-button v-if="or_status==0" style="margin-left: 35%;" type="primary" @click="chgsta_order()">确认接单</el-button></p>
+					  	<p><el-button v-if="or_status==1" style="margin-left: 6%;" type="primary" @click="ret()">来迟了，订单已经被抢走啦点击返回</el-button></p>
+					  	<p><el-button v-if="" style="margin-left: 6%;" type="primary" @click="">退单接单，待续..</el-button></p>
+					  </div>
+					</el-card>
+			    </el-main>
+			    
+			    <el-footer>
+			    	&copy; code_zl_shop商铺后台系统
+			    </el-footer>
+			  </el-container>
+			
+		</div>
+		<script>
+			new Vue({
+				el:'#app',
+				data:{
+			        member_id:'',
+					order_id:'',
+					order_sn:'',
+			        receiver_province:'',
+			        receiver_city:'',
+			        receiver_region:'',
+			        receiver_phone:'',
+			        receiver_name:'',
+			        or_status:'',
+			        deli_sta:'',
+			        deli_phone:'',
+				},
+				mounted:function(){
+					var _that=this;
+					//获取ID值
+					var id=location.href.split('=')[1];
+					//console.log("当前页面的网址是：",id);
+					
+					//发送AJAX请求到服务器获取当前ID的所有数据
+					ajax({
+						url:'/api/2020order_one.php?id='+id,
+						success:function(data){
+							//console.log(data); 
+						_that.member_id=data.member_id;
+//						_that.order_id=data.id;
+						_that.order_sn=data.order_sn;
+						_that.receiver_province=data.receiver_province;
+						_that.receiver_city=data.receiver_city;
+						_that.receiver_region=data.receiver_region;
+						_that.receiver_phone=data.receiver_phone;
+						_that.receiver_name=data.receiver_name;
+						_that.or_status=data.status;
+						_that.deli_sta=data.deli_sta;
+						}
+					});
+				},
+				//事件处理函数对象
+				methods:{
+					ret:function(){
+						location.href="2020order_list_deli.html";
+						},
+						
+					chgsta_order:function(){
+						var _that=this;
+						var id=location.href.split('=')[1];
+						var r = confirm("亲，您确定配送该订单吗");
+						if(r==true){
+							//构造AJAX向服务器发起接单，传ID值
+							console.log("当前页面的网址是：",id);
+//						var id=location.href.split('=')[1];
+						ajax({
+							url:'/api/2020order_list_deli_chagsta.php?id='+id,
+							success:function(data){
+								//将执行结果显示出来
+								if(data==1){
+									_that.deli_save_edit();
+									alert('接单成功，为您跳转详细信息');
+									location.href="2020order_list_deli.html";
+									
+								}else{
+									alert('接单失败');
+								}
+							}
+						})
+					}
+					},
+					
+					deli_save_edit:function(){
+						//获取修改以后的新数据
+						var deli_sta=this.deli_sta;
+						var member_id=this.member_id;
+						var order_sn=this.order_sn;
+						var receiver_province=this.receiver_province;
+						var receiver_city=this.receiver_city;
+						var receiver_region=this.receiver_region;
+						var receiver_phone=this.receiver_phone;
+						var receiver_name=this.receiver_name;
+						var deli_phone=this.deli_phone;
+						var id=location.href.split('=')[1];
+						console.log("当前页面的网址是：",id);
+						//构造AJAX发送数据到服务器更新数据
+						ajax({
+							type:'post',
+							url:'/api/2020order_list_deli_save.php',
+							data:`id=${id}&member_id=${member_id}&order_sn=${order_sn}&receiver_province=${receiver_province}&receiver_city=${receiver_city}&receiver_region=${receiver_region}&receiver_phone=${receiver_phone}&receiver_name=${receiver_name}&deli_phone=${deli_phone}`,
+							success:function(data){
+								if(data==1){
+									alert('接单成功');
+									location.href="2020order_list_deli.html";
+								}else{
+									alert('接单失败');
+								}
+							}
+						});
+					}
+				}
+				
+			});
+		</script>
+		
+	</body>
+</html>

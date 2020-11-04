@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<link rel="stylesheet" href="css/font.css">
+		<link rel="stylesheet" href="css/index.css">
+		<script src="js/vue.js"></script>
+		<script src="js/index.js"></script>
+		<link rel="stylesheet" href="css/main.css" type="text/css" />
+		<script src="/api/checkuser_deli.php"></script>
+		<script src="js/ajax.js"></script>
+		<style>
+			.delibtn button:hover{
+				color: #007AFF;cursor: hand;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			
+			<el-container id="main">
+			    <el-header height="100px">
+			    	<h1 style="font-size: small;">欢迎您 user</h1>
+			    	<p style="font-size: small;">配送接单广场</p>
+			    	<p style="font-size: small;margin-left: 90%;" @click="look_deli()">查看已接订单，验证配送身份</p>
+			    </el-header>
+			    
+			    <!--中间主体栏目-->
+			    <el-main>
+			    	<el-card class="box-card">
+					  <div slot="header" class="clearfix">
+					    <span>欢迎来到_接单广场</span>
+					  </div>
+					  <div class="text item" id="goods_list">
+					  	<!--搜索框-->
+					  	<div id="searchform">
+					  		
+							<span>内容：</span>
+							<el-input v-model="keywords" placeholder="请输入附近地址" size="mini"></el-input>
+							<el-button type="success" size="mini" @click="search">查看附近订单</el-button>
+							<el-button type="success" size="mini" @click="seeall()"></el-button>
+					  	</div>
+						
+						<!--数据表格-->
+						<el-table :data="tableData" style="width: 100%">
+						    <el-table-column label="订单id">
+						      <template slot-scope="scope">
+						        <span>{{scope.row.id}}</span>
+						      </template>
+						    </el-table-column>
+						    <el-table-column label="订单号" width="200px">
+						      <template slot-scope="scope">
+						        <span>{{ scope.row.order_sn}}</span>
+						      </template>
+						    </el-table-column>
+						    <el-table-column label="收件人">
+						      <template slot-scope="scope">
+						        <span>{{ scope.row.receiver_name }}</span>
+						      </template>
+						    </el-table-column>
+						    <el-table-column label="收件地址">
+						      <template slot-scope="scope">
+						        <span>{{ scope.row.receiver_detail_address }}</span>
+						      </template>
+						    </el-table-column>
+						    <el-table-column label="订单价格">
+						      <template slot-scope="scope">
+						        <span style="color:#f00;">{{ scope.row.total_amount }}</span>
+						      </template>
+						    </el-table-column>
+						    <el-table-column label="订单状态">
+						      <template slot-scope="scope">
+						        <span v-if="scope.row.deli_sta==0 && scope.row.deli_sta==0">待接单</span>
+						        <span v-if="scope.row.deli_sta==0 && scope.row.deli_sta==4">退单接单(返程)</span>
+						        <span v-if="scope.row.deli_sta==1">已完成</span>
+						        <span v-if="scope.row.deli_sta!==0 && scope.row.deli_sta!==1">退单订单</span><!--后面两个只是防止出现bug-->
+						      </template>
+						    </el-table-column>
+						    <el-table-column label="支付价格">
+						      <template slot-scope="scope">
+						        <span>{{ scope.row.pay_amount }}</span>
+						      </template>
+						    </el-table-column>
+						    <el-table-column label="联系电话">
+						      <template slot-scope="scope">
+						        <span>{{ scope.row.receiver_phone }}</span>
+						      </template>
+						    </el-table-column>
+						    </el-table-column>
+						    <el-table-column label="管理">
+						      <template slot-scope="scope" class="delibtn">
+						        <button style="" v-if="scope.row.deli_sta==0 && scope.row.deli_sta==0" @click="confirm(scope.row.id);chgsta_order(scope.row.id)">接单</button>
+						        <button style="" v-if="scope.row.deli_sta==0 && scope.row.deli_sta==4" @click="aga_confirm(scope.row.id);chgsta_order(scope.row.id)">退货订单</button>
+						        
+						      </template>
+						    </el-table-column>
+						</el-table>
+					  	
+					  	<!--分页-->
+					  	<el-pagination background layout="prev, pager, next" :page-count="pagecount" @current-change="changepage" :current-page.sync="curpage"></el-pagination>
+					  </div>
+					</el-card>
+			    </el-main>
+			    
+			    <el-footer>
+			    	&copy;code_zl_shop商铺后台系统
+			    </el-footer>
+			  </el-container>
+			
+		</div>
+		<script>
+			new Vue({
+				el:'#app',
+				data:{
+					options: [{
+			          value: 0,
+			          label: '所有分类'
+			        }],
+			        cateid: '',
+			        keywords:'',
+			        tableData: [],
+			        pagecount:1,
+			        curpage:1,
+				},
+				//编写生命周期函数，渲染初始化后去读取数据
+				mounted:function(){
+					this.showpage(1); //显示出所有的器材列表
+					
+				
+				},
+				//自定义函数
+				methods:{
+					//改变页码时重新显示数据
+					changepage:function(page){
+						this.showpage(page);
+					},
+					
+					//用户查看订单详情方法
+					checko:function(id){
+						location.href="2020order_list_1_1.html?id="+id;
+					},
+					//用户查看全部订单
+					seeall:function(){
+						location.href="2020order_list.html";
+					},
+					//用户查看评论
+					look_com:function(){
+						//var id=location.href.split('=')[1];
+						location.href="2020order_comment_all.html?id="
+						//想了想，评论应该是开放页，不需要验证可以设置登陆按钮
+					},
+					
+					look_deli:function(){
+						var id=location.href.split('=')[1];
+						location.href= "2020order_list_deli_one.html?id="+id;
+					},
+				
+				   //ajiedan 
+					confirm:function(id){
+						
+						location.href= "2020order_list_deli_conf.html?id="+id;						var _that=this;
+						
+					},
+					
+					aga_confirm:function(id){
+						
+						location.href= "2020order_list_deli_conf.html?id="+id;						var _that=this;
+						
+					},
+//					
+//					//简便测试，写完放到接单i详细信息页，不能直接确认
+//					chgsta_order:function(id){
+////						var r = confirm("亲，您确定配送该订单吗");
+////						if(r==true){
+//							//构造AJAX向服务器发起删除主动，传ID值
+//							console.log("当前页面的网址是：",id);
+////						var id=location.href.split('=')[1];
+//						ajax({
+//							url:'/api/2020order_list_deli_chagsta.php?id='+id,
+//							success:function(data){
+//								//将执行结果显示出来
+//								if(data.errcode==0){
+//									alert('接单成功，为您跳转详细信息');
+////									location.href="2020order_list_deli.html";
+//									_that.showpage();
+//								}else{
+//									alert('接单失败');
+//								}
+//							}
+//						})
+////					}
+//					},
+					
+					
+					
+					edit:function(id){
+						location.href="2020order_edit_1.html?id="+id;
+					},
+					
+					comment_or:function(id){
+						location.href="2020order_comment_1.html?id="+id;
+					},
+					look_com:function(){
+						location.href="2020comment_all.html";
+					},
+					//删除分类的事件处理函数
+					del:function(id){
+						var _that=this;
+						var r = confirm("亲，您确定删除该订单吗");
+						if(r==true){
+						//构造AJAX向服务器发起删除主动，传ID值
+//						var id=location.href.split('=')[1];
+						ajax({
+							url:'/api/2020order_user_del.php?id='+id,
+							success:function(data){
+								//将执行结果显示出来
+								if(data.errcode==0){
+									alert('删除成功');
+//									location.href="2020order_edit_1.html";
+									_that.showpage();
+								}else{
+									alert('删除失败');
+								}
+							  }
+						});
+						}
+					},
+					
+					
+					//根据页码显示当前页的数据
+					showpage:function(page){
+						var _that=this;
+						var cateid=this.cateid;
+						var keywords=this.keywords;
+						var id=5;
+//						var id=location.href.split('=')[1];
+						ajax({
+							url:'/api/2020order_list_deli.php?page='+page+'&keywords='+keywords+'&id='+id,
+							success:function(data){
+								//console.log(data);
+								_that.pagecount=data.pop(); //将数据携带的总页数弹出，并在页面上显示出页码表
+								
+								_that.tableData=data; //获取到数据以后将原有的数据替换掉
+							}
+						});
+					},
+					//点击搜索时执行的函数
+					search:function(){
+						this.showpage(1);
+						this.curpage=1; //搜索数据渲染完成后，将页面切换到第一页
+					}
+				}
+			});
+		</script>
+		
+	</body>
+</html>

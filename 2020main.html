@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+        <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<link rel="stylesheet" href="css/index.css" type="text/css" />
+		
+	</head>
+	<body>
+		<div id="app">
+			
+ <el-container id="main">
+    <el-header height="30px"><h1 style="font-size: small;">欢迎您,user</h1>
+    <p style="margin-top:30px ;font-size: small;" >查看系统公告</p>
+    </el-header>
+    <!--
+    	中间主体
+    -->
+    <el-main>
+			    	<el-card class="box-card">
+					  <div slot="header" class="clearfix">
+					    <span>销售榜</span>
+					  </div>
+					  <!--<div class="text item">
+						<p><el-alert title="商品总数：1000，已卖出：585，剩余：415" type="info" show-icon></el-alert></p>
+						<p><el-alert title="导入新数据" type="info" show-icon></el-alert></p>
+					  </div>
+					  -->
+					   <div class="text item" id="user_list">
+			
+
+						<el-table :data="tableData" style="width: 100%">
+						    <el-table-column label="商品名称">
+						      <template slot-scope="scope">
+						        <span>{{ scope.row.sku_name }}</span>
+						      </template>
+						    </el-table-column>
+						    
+						    <el-table-column label="商品销售量">
+						      <template slot-scope="scope">
+						        <span>{{ scope.row.sale_num }}</span>
+						      </template>
+						    </el-table-column>
+						    
+						    <el-table-column label="交易额">
+						      <template slot-scope="scope">
+						        <span>{{ scope.row.sale_num }}</span>
+						      </template>
+						    </el-table-column>
+						    <!--<el-table-column label="管理">
+						      <template slot-scope="scope">
+						        <el-button size="mini" @click="edit(scope.row.id)">修改</el-button>
+						        <el-button size="mini" @click="checko(scope.row.id)">查看用户订单</el-button>
+						        <el-button size="mini" type="danger" @click="del_admin(scope.row.id)">删除</el-button>
+						      </template>
+						    </el-table-column>-->
+					  	<el-button size="mini" @click="flush_page()">刷新</el-button>
+						    
+						</el-table>
+
+					</el-card>
+
+			    </el-main>
+    <el-footer>
+    	&copy; code_zl_shop商铺后台系统
+    </el-footer>
+  </el-container>
+			
+			
+		</div>
+		
+		<script>
+			new Vue({
+				el:'#app',
+				data:{
+					tableData: [],
+					
+				},
+				//定义生命周期函数，初始化渲染完成以后通过AJAX获取数据
+				mounted:function(){
+					this.showpa(1);
+//					ajax({
+//							url:'/api/2020shop_notice.php',
+//							success:function(data){	 
+//							}
+//						});
+				},
+				//自定义函数集
+				methods:{
+					//删除数据的事件处理函数
+					flush_page:function(){
+						var _that=this;
+						//构造AJAX请求发送ID的数据标识
+						_that.show();
+					},
+					//渲染页面的函数
+					showpa:function(){
+				
+						ajax({
+							url:'/api/2020shop_notice.php',
+							success:function(data){
+								_that.pagecount=data.pop();
+								_that.tableData=data;
+							}
+						});
+					},
+					
+				}
+			});
+		</script>
+	</body>
+</html>
